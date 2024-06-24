@@ -557,8 +557,11 @@ class SphinxDoctestTextfile(pytest.Module):
 class SphinxDoctestModule(pytest.Module):
     def collect(self) -> Iterator[_pytest.doctest.DoctestItem]:
         try:
+            kwargs = {}
+            if (sys.version_info.major == 3 and sys.version_info.minor >=7) or (sys.version_info.major > 3):
+                kwargs['consider_namespace_packages'] = True
             module = import_path(
-                self.path, root=self.config.rootpath, consider_namespace_packages=True
+                self.path, root=self.config.rootpath, **kwargs
             )
         except ImportError:
             if self.config.getvalue("doctest_ignore_import_errors"):
